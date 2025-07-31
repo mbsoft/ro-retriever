@@ -1,36 +1,162 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Route Optimization Request Retriever
 
-## Getting Started
+A Single Page Application (SPA) built with Next.js for retrieving route optimization request inputs from the NextBillion route optimization service stored in Google Cloud Storage.
 
-First, run the development server:
+## 🚀 Features
+
+- **Request ID Input**: Simple form to enter route optimization request IDs
+- **Google Cloud Storage Integration**: Retrieves input JSON files from GCS bucket
+- **Modern UI**: Beautiful, responsive interface built with Tailwind CSS
+- **Real-time Status**: Shows loading states and error handling
+- **JSON Export Options**: Copy to clipboard or download as file
+- **Secure Authentication**: Uses Google Service Account with minimal permissions
+
+## 🛠️ Technology Stack
+
+- **Framework**: Next.js 15 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Cloud Storage**: Google Cloud Storage
+- **Authentication**: Google Service Account
+
+## 📋 Prerequisites
+
+- Node.js 18.18.0 or higher
+- Google Cloud Project with access to the `nb-optimization-sgp` bucket
+- Google Service Account with Storage Object Viewer permissions
+
+## ⚡ Quick Start
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/ro-retriever.git
+cd ro-retriever
+```
+
+### 2. Install Dependencies
+
+```bash
+npm install
+```
+
+### 3. Configure Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+```bash
+# Google Cloud Storage Configuration
+GOOGLE_CLOUD_PROJECT_ID=your-project-id
+GOOGLE_SERVICE_ACCOUNT_CREDENTIALS={"type":"service_account","project_id":"your-project-id",...}
+```
+
+**See [SETUP.md](./SETUP.md) for detailed environment configuration instructions.**
+
+### 4. Run the Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 5. Open Your Browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Navigate to [http://localhost:3000](http://localhost:3000)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 📖 Usage
 
-## Learn More
+1. **Enter a Request ID** in the input field
+2. **Click "Retrieve Request Data"** to fetch from Google Cloud Storage
+3. **View the JSON data** in a formatted display
+4. **Copy to clipboard** or **Download as file** using the action buttons
 
-To learn more about Next.js, take a look at the following resources:
+## 🏗️ Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+ro-retriever/
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   └── retrieve-request/
+│   │   │       └── route.ts          # Google Cloud Storage API endpoint
+│   │   ├── components/
+│   │   │   ├── ErrorBoundary.tsx     # Error handling component
+│   │   │   └── LoadingSpinner.tsx    # Loading component
+│   │   ├── page.tsx                  # Main SPA component
+│   │   ├── layout.tsx                # App layout
+│   │   └── globals.css               # Global styles
+│   └── ...
+├── SETUP.md                          # Detailed setup instructions
+├── README.md                         # This file
+└── package.json                      # Dependencies and scripts
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 🔧 Available Scripts
 
-## Deploy on Vercel
+```bash
+# Development
+npm run dev          # Start development server
+npm run build        # Build for production
+npm run start        # Start production server
+npm run lint         # Run ESLint
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# Environment Validation (if scripts exist)
+npm run validate-env # Validate Google Cloud credentials
+npm run debug-env    # Debug environment variables
+npm run fix-env      # Fix environment file format
+npm run check-permissions # Check GCS permissions
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🔒 Security
+
+- Environment variables for sensitive credentials
+- Service account with minimal required permissions (Storage Object Viewer)
+- `.env.local` excluded from version control
+- No hardcoded secrets in the codebase
+
+## 🌐 Google Cloud Storage
+
+The application retrieves files from the `nb-optimization-sgp` bucket with the path pattern:
+```
+gs://nb-optimization-sgp/api-auto-sgp/internal/{requestId}-input.json
+```
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+1. Connect your GitHub repository to Vercel
+2. Add environment variables in Vercel dashboard
+3. Deploy automatically on push to main branch
+
+### Other Platforms
+
+The application can be deployed to any platform that supports Next.js:
+- Netlify
+- Railway
+- DigitalOcean App Platform
+- AWS Amplify
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## 📝 License
+
+This project is private and proprietary. All rights reserved.
+
+## 🆘 Support
+
+For support and questions:
+- Check the [SETUP.md](./SETUP.md) for configuration issues
+- Review the [Issues](../../issues) page for known problems
+- Create a new issue for bugs or feature requests
+
+## 🔄 Version History
+
+- **v1.0.0** - Initial release with Google Cloud Storage integration
+- **v1.1.0** - Added JSON download functionality
+- **v1.2.0** - Improved UI visibility and error handling
