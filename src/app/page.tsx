@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import LoadingSpinner from './components/LoadingSpinner';
 import DataAnalyzer from './components/DataAnalyzer';
+import JsonViewer from './components/JsonViewer';
 
 interface RouteOptimizationData {
   requestId: string;
@@ -223,11 +224,7 @@ export default function RouteOptimizationRetriever() {
                       </button>
                     </div>
                   </div>
-                  <div className="bg-gray-50 rounded-lg p-4 overflow-auto max-h-96">
-                    <pre className="text-sm text-gray-800 whitespace-pre-wrap">
-                      {JSON.stringify(data.inputData, null, 2)}
-                    </pre>
-                  </div>
+                  <JsonViewer data={data.inputData} title="Input Data" />
                 </div>
               </div>
             )}
