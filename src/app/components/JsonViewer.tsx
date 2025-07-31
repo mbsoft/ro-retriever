@@ -26,7 +26,7 @@ function JsonNode({ data, level, path }: JsonNodeProps) {
   }
 
   if (typeof data === 'string') {
-    return <span className="text-green-600">"{data}"</span>;
+    return <span className="text-green-600">&quot;{data}&quot;</span>;
   }
 
   if (typeof data === 'number') {
@@ -100,9 +100,9 @@ function JsonNode({ data, level, path }: JsonNodeProps) {
         
         {isExpanded && (
           <div style={{ marginLeft: indent }}>
-            {keys.map((key, index) => (
+            {keys.map((key) => (
               <div key={key} className="flex">
-                <span className="text-red-600 mr-2">"{key}":</span>
+                <span className="text-red-600 mr-2">&quot;{key}&quot;:</span>
                 <div className="flex-1">
                   <JsonNode
                     data={(data as Record<string, unknown>)[key]}
