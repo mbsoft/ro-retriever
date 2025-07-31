@@ -99,11 +99,6 @@ npm run build        # Build for production
 npm run start        # Start production server
 npm run lint         # Run ESLint
 
-# Environment Validation (if scripts exist)
-npm run validate-env # Validate Google Cloud credentials
-npm run debug-env    # Debug environment variables
-npm run fix-env      # Fix environment file format
-npm run check-permissions # Check GCS permissions
 ```
 
 ## 🔒 Security
