@@ -6,13 +6,6 @@ interface SummaryStats {
   uniqueLocations: number;
   totalDistance?: number;
   totalDuration?: number;
-  optionDetails?: {
-    objective?: string | Record<string, unknown>;
-    custom?: string;
-    solver_mode?: string;
-    routing?: string;
-    constraints?: string;
-  };
 }
 
 interface DataAnalyzerProps {
@@ -66,18 +59,6 @@ export default function DataAnalyzer({ data }: DataAnalyzerProps) {
           
           stats.uniqueLocations = locationSet.size;
         }
-      }
-
-      // Extract option details
-      if (data.options && typeof data.options === 'object' && !Array.isArray(data.options)) {
-        const options = data.options as Record<string, unknown>;
-        stats.optionDetails = {
-          objective: options.objective as string | Record<string, unknown> | undefined,
-          custom: options.custom ? String(options.custom) : undefined,
-          solver_mode: options.solver_mode ? String(options.solver_mode) : undefined,
-          routing: options.routing ? String(options.routing) : undefined,
-          constraints: options.constraints ? String(options.constraints) : undefined,
-        };
       }
 
       // Calculate total distance if available
@@ -135,49 +116,7 @@ export default function DataAnalyzer({ data }: DataAnalyzerProps) {
         </div>
       </div>
 
-      {/* Option Details */}
-      {stats.optionDetails && (
-        <div className="mt-6">
-          <h4 className="text-md font-semibold text-gray-900 mb-3">Options Configuration</h4>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {stats.optionDetails.objective && (
-              <div className="bg-blue-50 rounded-lg p-3">
-                <div className="text-xs text-blue-600 font-medium">Objective</div>
-                <div className="text-sm text-blue-900 font-semibold break-all">
-                  {typeof stats.optionDetails.objective === 'object' 
-                    ? JSON.stringify(stats.optionDetails.objective, null, 2)
-                    : stats.optionDetails.objective
-                  }
-                </div>
-              </div>
-            )}
-            {stats.optionDetails.solver_mode && (
-              <div className="bg-green-50 rounded-lg p-3">
-                <div className="text-xs text-green-600 font-medium">Solver Mode</div>
-                <div className="text-sm text-green-900 font-semibold">{stats.optionDetails.solver_mode}</div>
-              </div>
-            )}
-            {stats.optionDetails.routing && (
-              <div className="bg-purple-50 rounded-lg p-3">
-                <div className="text-xs text-purple-600 font-medium">Routing</div>
-                <div className="text-sm text-purple-900 font-semibold">{stats.optionDetails.routing}</div>
-              </div>
-            )}
-            {stats.optionDetails.constraints && (
-              <div className="bg-orange-50 rounded-lg p-3">
-                <div className="text-xs text-orange-600 font-medium">Constraints</div>
-                <div className="text-sm text-orange-900 font-semibold">{stats.optionDetails.constraints}</div>
-              </div>
-            )}
-            {stats.optionDetails.custom && (
-              <div className="bg-indigo-50 rounded-lg p-3 md:col-span-2 lg:col-span-3">
-                <div className="text-xs text-indigo-600 font-medium">Custom</div>
-                <div className="text-sm text-indigo-900 font-semibold break-all">{stats.optionDetails.custom}</div>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+
 
       {/* Distance and Duration */}
       {(stats.totalDistance !== undefined || stats.totalDuration !== undefined) && (

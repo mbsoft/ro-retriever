@@ -190,7 +190,7 @@ export default function RouteOptimizationRetriever() {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-lg font-medium text-gray-900">
-                      Input Data
+
                     </h3>
                     <div className="flex gap-2">
                       <button
