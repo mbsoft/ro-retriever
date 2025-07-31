@@ -11,10 +11,14 @@ interface JsonNodeProps {
   data: unknown;
   level: number;
   path: string;
+  globalCollapsed?: boolean;
 }
 
-function JsonNode({ data, level, path }: JsonNodeProps) {
-  const [isExpanded, setIsExpanded] = useState(false); // Start collapsed by default
+function JsonNode({ data, level, path, globalCollapsed = false }: JsonNodeProps) {
+  const [isExpanded, setIsExpanded] = useState(level === 0); // Top level starts expanded
+  
+  // When globally collapsed, only show content for level 0, collapse everything else
+  const shouldShowContent = !globalCollapsed || level === 0;
   const indent = level * 20;
 
   if (data === null) {
@@ -56,7 +60,7 @@ function JsonNode({ data, level, path }: JsonNodeProps) {
           {!isExpanded && <span className="text-gray-600">]</span>}
         </button>
         
-        {isExpanded && (
+        {isExpanded && shouldShowContent && (
           <div style={{ marginLeft: indent }}>
             {data.map((item, index) => (
               <div key={index} className="flex">
@@ -66,6 +70,7 @@ function JsonNode({ data, level, path }: JsonNodeProps) {
                     data={item}
                     level={level + 1}
                     path={`${path}[${index}]`}
+                    globalCollapsed={globalCollapsed}
                   />
                 </div>
               </div>
@@ -98,7 +103,7 @@ function JsonNode({ data, level, path }: JsonNodeProps) {
           {!isExpanded && <span className="text-gray-600">{'}'}</span>}
         </button>
         
-        {isExpanded && (
+        {isExpanded && shouldShowContent && (
           <div style={{ marginLeft: indent }}>
             {keys.map((key) => (
               <div key={key} className="flex">
@@ -108,6 +113,7 @@ function JsonNode({ data, level, path }: JsonNodeProps) {
                     data={(data as Record<string, unknown>)[key]}
                     level={level + 1}
                     path={`${path}.${key}`}
+                    globalCollapsed={globalCollapsed}
                   />
                 </div>
               </div>
@@ -123,7 +129,7 @@ function JsonNode({ data, level, path }: JsonNodeProps) {
 }
 
 export default function JsonViewer({ data, title = "JSON Data" }: JsonViewerProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [globalCollapsed, setGlobalCollapsed] = useState(false);
 
   if (!data) {
     return null;
@@ -139,18 +145,16 @@ export default function JsonViewer({ data, title = "JSON Data" }: JsonViewerProp
           {title}
         </h3>
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={() => setGlobalCollapsed(!globalCollapsed)}
           className="text-sm text-gray-600 hover:text-gray-900 transition-colors"
         >
-          {isExpanded ? 'Collapse All' : 'Expand All'}
+          {globalCollapsed ? 'Expand All' : 'Collapse All'}
         </button>
       </div>
       
-      {isExpanded && (
-        <div className="bg-gray-50 rounded-lg p-4 font-mono text-sm overflow-x-auto">
-          <JsonNode data={data} level={0} path="root" />
-        </div>
-      )}
+      <div className="bg-gray-50 rounded-lg p-4 font-mono text-sm overflow-x-auto">
+        <JsonNode data={data} level={0} path="root" globalCollapsed={globalCollapsed} />
+      </div>
     </div>
   );
 } 
