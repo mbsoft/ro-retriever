@@ -6,6 +6,13 @@ interface SummaryStats {
   uniqueLocations: number;
   totalDistance?: number;
   totalDuration?: number;
+  optionDetails?: {
+    objective?: string | Record<string, unknown>;
+    custom?: string;
+    solver_mode?: string;
+    routing?: string;
+    constraints?: string;
+  };
 }
 
 interface DataAnalyzerProps {
@@ -40,63 +47,38 @@ export default function DataAnalyzer({ data }: DataAnalyzerProps) {
         stats.shipments = data.shipments.length;
       }
 
-      // Extract options
-      if (data.options && Array.isArray(data.options)) {
-        stats.options = data.options.length;
+      // Extract options count (options is now an object, not an array)
+      if (data.options && typeof data.options === 'object' && !Array.isArray(data.options)) {
+        stats.options = Object.keys(data.options).length;
       }
 
-      // Count unique locations from various sources
-      const locations = new Set<string>();
-
-      // From vehicles
-      if (data.vehicles && Array.isArray(data.vehicles)) {
-        data.vehicles.forEach((vehicle: Record<string, unknown>) => {
-          if (vehicle.start_location) {
-            locations.add(JSON.stringify(vehicle.start_location));
-          }
-          if (vehicle.end_location) {
-            locations.add(JSON.stringify(vehicle.end_location));
-          }
-        });
+      // Count unique locations from locations.location array
+      if (data.locations && typeof data.locations === 'object' && !Array.isArray(data.locations)) {
+        const locationsObj = data.locations as Record<string, unknown>;
+        if (locationsObj.location && Array.isArray(locationsObj.location)) {
+          const locationSet = new Set<string>();
+          
+          locationsObj.location.forEach((loc: unknown) => {
+            if (typeof loc === 'string') {
+              locationSet.add(loc);
+            }
+          });
+          
+          stats.uniqueLocations = locationSet.size;
+        }
       }
 
-      // From jobs
-      if (data.jobs && Array.isArray(data.jobs)) {
-        data.jobs.forEach((job: Record<string, unknown>) => {
-          if (job.location) {
-            locations.add(JSON.stringify(job.location));
-          }
-          if (job.pickup_location) {
-            locations.add(JSON.stringify(job.pickup_location));
-          }
-          if (job.delivery_location) {
-            locations.add(JSON.stringify(job.delivery_location));
-          }
-        });
+      // Extract option details
+      if (data.options && typeof data.options === 'object' && !Array.isArray(data.options)) {
+        const options = data.options as Record<string, unknown>;
+        stats.optionDetails = {
+          objective: options.objective as string | Record<string, unknown> | undefined,
+          custom: options.custom ? String(options.custom) : undefined,
+          solver_mode: options.solver_mode ? String(options.solver_mode) : undefined,
+          routing: options.routing ? String(options.routing) : undefined,
+          constraints: options.constraints ? String(options.constraints) : undefined,
+        };
       }
-
-      // From shipments
-      if (data.shipments && Array.isArray(data.shipments)) {
-        data.shipments.forEach((shipment: Record<string, unknown>) => {
-          if (shipment.pickup_location) {
-            locations.add(JSON.stringify(shipment.pickup_location));
-          }
-          if (shipment.delivery_location) {
-            locations.add(JSON.stringify(shipment.delivery_location));
-          }
-        });
-      }
-
-      // From options
-      if (data.options && Array.isArray(data.options)) {
-        data.options.forEach((option: Record<string, unknown>) => {
-          if (option.location) {
-            locations.add(JSON.stringify(option.location));
-          }
-        });
-      }
-
-      stats.uniqueLocations = locations.size;
 
       // Calculate total distance if available
       if (data.total_distance !== undefined) {
@@ -119,8 +101,11 @@ export default function DataAnalyzer({ data }: DataAnalyzerProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">
-        📊 Data Summary Statistics
+      <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+        <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+        </svg>
+        Data Summary Statistics
       </h3>
       
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
@@ -150,6 +135,51 @@ export default function DataAnalyzer({ data }: DataAnalyzerProps) {
         </div>
       </div>
 
+      {/* Option Details */}
+      {stats.optionDetails && (
+        <div className="mt-6">
+          <h4 className="text-md font-semibold text-gray-900 mb-3">Options Configuration</h4>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            {stats.optionDetails.objective && (
+              <div className="bg-blue-50 rounded-lg p-3">
+                <div className="text-xs text-blue-600 font-medium">Objective</div>
+                <div className="text-sm text-blue-900 font-semibold break-all">
+                  {typeof stats.optionDetails.objective === 'object' 
+                    ? JSON.stringify(stats.optionDetails.objective, null, 2)
+                    : stats.optionDetails.objective
+                  }
+                </div>
+              </div>
+            )}
+            {stats.optionDetails.solver_mode && (
+              <div className="bg-green-50 rounded-lg p-3">
+                <div className="text-xs text-green-600 font-medium">Solver Mode</div>
+                <div className="text-sm text-green-900 font-semibold">{stats.optionDetails.solver_mode}</div>
+              </div>
+            )}
+            {stats.optionDetails.routing && (
+              <div className="bg-purple-50 rounded-lg p-3">
+                <div className="text-xs text-purple-600 font-medium">Routing</div>
+                <div className="text-sm text-purple-900 font-semibold">{stats.optionDetails.routing}</div>
+              </div>
+            )}
+            {stats.optionDetails.constraints && (
+              <div className="bg-orange-50 rounded-lg p-3">
+                <div className="text-xs text-orange-600 font-medium">Constraints</div>
+                <div className="text-sm text-orange-900 font-semibold">{stats.optionDetails.constraints}</div>
+              </div>
+            )}
+            {stats.optionDetails.custom && (
+              <div className="bg-indigo-50 rounded-lg p-3 md:col-span-2 lg:col-span-3">
+                <div className="text-xs text-indigo-600 font-medium">Custom</div>
+                <div className="text-sm text-indigo-900 font-semibold break-all">{stats.optionDetails.custom}</div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Distance and Duration */}
       {(stats.totalDistance !== undefined || stats.totalDuration !== undefined) && (
         <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           {stats.totalDistance !== undefined && (
