@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import LoadingSpinner from './components/LoadingSpinner';
+import DataAnalyzer from './components/DataAnalyzer';
 
 interface RouteOptimizationData {
   requestId: string;
@@ -180,7 +181,11 @@ export default function RouteOptimizationRetriever() {
             )}
 
             {data.status === 'success' && data.inputData && (
-              <div className="space-y-4">
+              <div className="space-y-6">
+                {/* Summary Statistics */}
+                <DataAnalyzer data={data.inputData} />
+                
+                {/* JSON Data */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-lg font-medium text-gray-900">
