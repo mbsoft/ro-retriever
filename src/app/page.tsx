@@ -11,6 +11,8 @@ interface RouteOptimizationData {
   timestamp: string;
   status: 'loading' | 'success' | 'error';
   error?: string;
+  location?: string;
+  sourceBucket?: string;
 }
 
 export default function RouteOptimizationRetriever() {
@@ -50,7 +52,9 @@ export default function RouteOptimizationRetriever() {
         requestId: requestId.trim(),
         inputData: result.data,
         timestamp: new Date().toISOString(),
-        status: 'success'
+        status: 'success',
+        location: result.location,
+        sourceBucket: result.sourceBucket
       });
     } catch (error) {
       setData({
@@ -159,6 +163,11 @@ export default function RouteOptimizationRetriever() {
               <span className="ml-2 text-sm font-medium text-gray-700">
                 Request ID: {data.requestId}
               </span>
+              {data.status === 'success' && data.location && (
+                <span className="ml-2 text-sm font-medium text-blue-700">
+                  • Location: {data.location}
+                </span>
+              )}
             </div>
 
             {data.status === 'error' && (
